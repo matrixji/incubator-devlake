@@ -1,0 +1,24 @@
+{
+    "name": "Devlake Deveopment",
+    "dockerComposeFile": "docker-compose.yml",
+    "service": "devel",
+    "workspaceFolder": "/workspace",
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "golang.go"
+            ],
+            "settings": {
+            }
+        }
+    },
+
+    "forwardPorts": [
+        3306, 3002
+    ],
+
+    "portsAttributes": {
+        "3002": {"label": "Grafana"},
+        "3306": {"label": "MySQL"}
+    }
+}

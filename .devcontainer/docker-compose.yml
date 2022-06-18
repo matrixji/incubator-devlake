@@ -1,0 +1,41 @@
+version: "3.9"
+
+volumes:
+  mysql-data:
+  npm-cache:
+  go-build-cache:
+
+services:
+  mysql:
+    image: mariadb:10.7.4
+    env_file:
+      - env
+    restart: unless-stopped
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  grafana:
+    build:
+      context: ../grafana
+      dockerfile: Dockerfile
+    env_file:
+      - env
+    ports:
+      - 3002:3000
+    depends_on:
+      - mysql
+
+  devel:
+    image: matrixji/devlake-devel:latest
+    # build:
+    #   context: ..
+    #   dockerfile: .devcontainer/Dockerfile
+    env_file:
+      - env
+    command: sleep infinity
+    volumes:
+      - ..:/workspace:cached
+      - npm-cache:/root/.npm
+      - go-build-cache:/root/.cache/go-build
+    depends_on:
+      - mysql
