@@ -48,7 +48,7 @@ jobs:
         run: |
           export NODE_IP=$(kubectl get nodes --namespace default -o jsonpath="{.items[0].status.addresses[0].address}")
           echo Node IP: ${NODE_IP}
-          helm install --wait --timeout 600s deploy-test deployment/helm \
+          helm install --wait --timeout 900s deploy-test deployment/helm \
             --set service.uiPort=30000 \
             --set service.grafanaPort=30001 \
             --set service.grafanaEndpoint=http://${NODE_IP}:30001
@@ -84,6 +84,6 @@ jobs:
         run: |
           for pod in $(kubectl get pods -o jsonpath='{.items[*].metadata.name}') ; do
             echo logs for $pod
-            kubectl logs $pod
+            kubectl logs $pod || echo ""
           done
 
