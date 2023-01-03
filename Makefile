@@ -20,7 +20,7 @@
 SHA = $(shell git show -s --format=%h)
 TAG ?= $(shell git tag --points-at HEAD)
 IMAGE_REPO ?= "apache"
-VERSION = $(TAG)@$(SHA)
+VERSION ?= $(TAG)@$(SHA)
 
 go-dep:
 	go install github.com/vektra/mockery/v2@latest
@@ -54,7 +54,7 @@ build: build-plugin build-server
 all: build build-worker
 
 build-server-image:
-	docker build -t $(IMAGE_REPO)/devlake:$(TAG) --file ./Dockerfile .
+	docker build -t $(IMAGE_REPO)/devlake:$(TAG) --build-arg LAKE_VERSION=$(VERSION) --file ./Dockerfile .
 
 build-config-ui-image:
 	cd config-ui; docker build -t $(IMAGE_REPO)/devlake-config-ui:$(TAG) --file ./Dockerfile .
