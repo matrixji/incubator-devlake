@@ -18,7 +18,7 @@ limitations under the License.
 package tasks
 
 import (
-	"strings"
+	"regexp"
 
 	"github.com/apache/incubator-devlake/core/errors"
 	"github.com/apache/incubator-devlake/core/plugin"
@@ -48,8 +48,9 @@ func (o GitExtractorOptions) Valid() errors.Error {
 	if o.Url == "" {
 		return errors.BadInput.New("empty url")
 	}
-	url := strings.TrimPrefix(o.Url, "ssh://")
-	if !(strings.HasPrefix(o.Url, "http") || strings.HasPrefix(url, "git@") || strings.HasPrefix(o.Url, "/")) {
+	// validate git repo url for http(s), ssh, git@, or local path
+	var gitUrlRegex = regexp.MustCompile(`^((http|https|ssh)://|git@|/).*`)
+	if !gitUrlRegex.MatchString(o.Url) {
 		return errors.BadInput.New("wrong url")
 	}
 	return nil

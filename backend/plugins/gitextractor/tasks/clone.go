@@ -20,13 +20,14 @@ package tasks
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/apache/incubator-devlake/core/errors"
 	"github.com/apache/incubator-devlake/core/log"
 	"github.com/apache/incubator-devlake/core/plugin"
 	"github.com/apache/incubator-devlake/plugins/gitextractor/models"
 	"github.com/apache/incubator-devlake/plugins/gitextractor/parser"
 	"github.com/apache/incubator-devlake/plugins/gitextractor/store"
-	"strings"
 )
 
 var CloneGitRepoMeta = plugin.SubTaskMeta{
@@ -61,7 +62,8 @@ func NewGitRepo(ctx context.Context, logger log.Logger, storage models.Store, op
 	p := parser.NewGitRepoCreator(storage, logger)
 	if strings.HasPrefix(op.Url, "http") {
 		repo, err = p.CloneOverHTTP(ctx, op.RepoId, op.Url, op.User, op.Password, op.Proxy)
-	} else if url := strings.TrimPrefix(op.Url, "ssh://"); strings.HasPrefix(url, "git@") {
+	} else if strings.HasPrefix(op.Url, "git@") || strings.HasPrefix(op.Url, "ssh://") {
+		url := strings.TrimPrefix(op.Url, "ssh://")
 		repo, err = p.CloneOverSSH(ctx, op.RepoId, url, op.PrivateKey, op.Passphrase)
 	} else if strings.HasPrefix(op.Url, "/") {
 		repo, err = p.LocalRepo(op.Url, op.RepoId)
