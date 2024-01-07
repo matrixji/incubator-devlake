@@ -20,6 +20,7 @@ import type { PluginConfigType } from './types';
 import { AzureConfig } from './register/azure';
 import { BambooConfig } from './register/bamboo';
 import { BitBucketConfig } from './register/bitbucket';
+import { GerritConfig } from './register/gerrit';
 import { GitHubConfig } from './register/github';
 import { GitLabConfig } from './register/gitlab';
 import { JenkinsConfig } from './register/jenkins';
@@ -35,6 +36,7 @@ export const PluginConfig: PluginConfigType[] = [
   AzureConfig,
   BambooConfig,
   BitBucketConfig,
+  GerritConfig,
   GitHubConfig,
   GitLabConfig,
   JenkinsConfig,

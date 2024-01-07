@@ -37,6 +37,8 @@ export const getPluginScopeId = (plugin: string, scope: any) => {
       return `${scope.projectKey}`;
     case 'bamboo':
       return `${scope.planKey}`;
+    case 'gerrit':
+      return `${scope.gerritId}`;
     default:
       return `${scope.id}`;
   }
