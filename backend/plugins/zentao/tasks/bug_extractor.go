@@ -38,6 +38,16 @@ var ExtractBugMeta = plugin.SubTaskMeta{
 }
 
 func ExtractBug(taskCtx plugin.SubTaskContext) errors.Error {
+	getStrOrNumAsString := func(data json.RawMessage) string {
+		strVal, intVal := "", 0
+		if json.Unmarshal(data, &strVal) == nil {
+			return strVal
+		}
+		if json.Unmarshal(data, &intVal) == nil {
+			return string(data)
+		}
+		return ""
+	}
 	data := taskCtx.GetData().(*ZentaoTaskData)
 	statusMappings := getBugStatusMapping(data)
 	extractor, err := api.NewApiExtractor(api.ApiExtractorArgs{
@@ -117,7 +127,7 @@ func ExtractBug(taskCtx plugin.SubTaskContext) errors.Error {
 				LastEditedById: data.AccountCache.getAccountIDFromApiAccount(res.LastEditedBy),
 				LastEditedDate: res.LastEditedDate,
 				Deleted:        res.Deleted,
-				PriOrder:       res.PriOrder,
+				PriOrder:       getStrOrNumAsString(res.PriOrder),
 				SeverityOrder:  res.SeverityOrder,
 				Needconfirm:    res.Needconfirm,
 				StatusName:     res.StatusName,

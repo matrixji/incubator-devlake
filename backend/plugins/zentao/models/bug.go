@@ -115,7 +115,7 @@ type ZentaoBugRes struct {
 	LastEditedBy   *ApiAccount         `json:"lastEditedBy"`
 	LastEditedDate *common.Iso8601Time `json:"lastEditedDate"`
 	Deleted        bool                `json:"deleted"`
-	PriOrder       string              `json:"priOrder"`
+	PriOrder       json.RawMessage     `json:"priOrder"`
 	SeverityOrder  int                 `json:"severityOrder"`
 	Needconfirm    bool                `json:"needconfirm"`
 	StatusName     string              `json:"statusName"`
