@@ -16,57 +16,73 @@
  *
  */
 
+import { ExternalLink } from '@/components';
 import { DOC_URL } from '@/release';
+
+import type { PluginConfigType } from '../../types';
+import { PluginType } from '../../types';
 
 import Icon from './assets/icon.svg';
 
-export const GerritConfig = {
-  plugin: 'gerrit',
-  name: 'Gerrit',
+export const GerritConfig: PluginConfigType = {
+  type: PluginType.Connection,
+  plugin: 'gitlab',
+  name: 'GitLab',
   icon: Icon,
-  sort: 5,
+  sort: 2,
   connection: {
-    docLink: DOC_URL.PLUGIN.BITBUCKET.BASIS,
+    docLink: DOC_URL.PLUGIN.GITLAB.BASIS,
     initialValues: {
-      endpoint: 'https://api.bitbucket.org/2.0/',
+      endpoint: 'https://gitlab.com/api/v4/',
     },
     fields: [
       'name',
       {
         key: 'endpoint',
-        subLabel: 'Provide the gerrit instance API endpoint. E.g. https://x/a/',
+        multipleVersions: {
+          cloud: 'https://gitlab.com/api/v4/',
+          server: '(v11+)',
+        },
+        subLabel:
+          'If you are using GitLab Server, please enter the endpoint URL. E.g. https://gitlab.your-company.com/api/v4/',
       },
-      'username',
       {
-        key: 'password',
-        label: 'App Password',
+        key: 'token',
+        label: 'Personal Access Token',
+        subLabel: (
+          <ExternalLink link={DOC_URL.PLUGIN.GITLAB.AUTH_TOKEN}>
+            Learn how to create a personal access token
+          </ExternalLink>
+        ),
       },
       'proxy',
       {
         key: 'rateLimitPerHour',
         subLabel:
-          'By default, DevLake uses dynamic rate limit for optimized data collection for BitBucket. But you can adjust the collection speed by entering a fixed value.',
-        learnMore: DOC_URL.PLUGIN.BITBUCKET.RATE_LIMIT,
+          'By default, DevLake uses dynamic rate limit around 12,000 requests/hour for optimized data collection for GitLab. But you can adjust the collection speed by entering a fixed value.',
+        learnMore: DOC_URL.PLUGIN.GITLAB.RATE_LIMIT,
         externalInfo:
-          'The maximum rate limit for different entities in BitBucket Cloud is 60,000 or 1,000 requests/hour.',
-        defaultValue: 1000,
+          'The maximum rate limit for GitLab Cloud is 120,000 requests/hour. Tokens under the same IP address share the rate limit, so the actual rate limit for your token will be lower than this number.',
+        defaultValue: 12000,
       },
     ],
   },
   dataScope: {
-    searchPlaceholder: 'Enter the keywords to search for repositories that you have read access',
-    title: 'Repositories',
-    millerColumn: {
-      columnCount: 2,
+    millerColumns: {
+      title: 'Projects *',
+      subTitle: 'Select the project you would like to sync.',
+      firstColumnTitle: 'Subgroups/Projects',
+    },
+    search: {
+      title: 'Add repositories outside of your projects',
+      subTitle: 'Search for repositories and add to them',
     },
   },
   scopeConfig: {
-    entities: ['CODE', 'CODEREVIEW'],
+    entities: ['CODE', 'TICKET', 'CODEREVIEW', 'CROSS', 'CICD'],
     transformation: {
-      refdiff: {
-        tagsLimit: 10,
-        tagsPattern: '/v\\d+\\.\\d+(\\.\\d+(-rc)*\\d*)*$/',
-      },
+      deploymentPattern: '(deploy|push-image)',
+      productionPattern: 'prod(.*)',
     },
   },
 };
