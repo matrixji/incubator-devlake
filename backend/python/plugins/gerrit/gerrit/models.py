@@ -22,6 +22,9 @@ from pydantic import SecretStr
 
 from pydevlake.pipeline_tasks import RefDiffOptions
 
+# needed to be able to run migrations
+import gerrit.migrations
+
 class GerritConnection(Connection):
     base_url: str
     username: Optional[str]
