@@ -33,17 +33,17 @@ def init_schemas(b: MigrationScriptBuilder):
         password: Optional[SecretStr]
         pattern: Optional[str]
 
-    class GerritProject(ToolScope, table=True):
+    class GerritProject(ToolScope):
         name: str
         url: str
 
     class GerritProjectConfig(ScopeConfig):
         refdiff: Optional[RefDiffOptions]
 
-    class GerritChange(ToolModel, table=True):
+    class GerritChange(ToolModel):
         id: str = Field(primary_key=True)
         change_id: str
-        change_number: int = Field(source='/_number')
+        change_number: int
         subject: str
         status: str
         branch: str
@@ -51,9 +51,9 @@ def init_schemas(b: MigrationScriptBuilder):
         merged_date: Optional[datetime]
         closed_date: Optional[datetime]
         current_revision: Optional[str]
-        owner_name: Optional[str] = Field(source='/owner/name')
-        owner_email: Optional[str] = Field(source='/owner/email')
-        revisions_json: Optional[str] = Field(source='/revisions_json')
+        owner_name: Optional[str]
+        owner_email: Optional[str]
+        revisions_json: Optional[str]
 
     class GerritChangeCommit(ToolModel, table=True):
         commit_id: str = Field(primary_key=True)
