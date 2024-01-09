@@ -10,8 +10,8 @@ from gerrit.models import GerritConnection, GerritProject, GerritProjectConfig
 import pydevlake as dl
 from pydevlake.api import APIException
 from pydevlake.domain_layer.code import Repo
-from pydevlake.message import PipelineTask, RemoteScopeGroup, TestConnectionResult
-from pydevlake.model import Connection, DomainScope, DomainType, ScopeConfig
+from pydevlake.message import PipelineTask, RemoteScopeGroup, TestConnectionResult, RemoteScope
+from pydevlake.model import Connection, DomainScope, DomainType, ScopeConfig, raw_data_params
 from pydevlake.pipeline_tasks import gitextractor, refdiff
 from pydevlake.plugin import Plugin, ScopeConfigPair
 from pydevlake.stream import Stream
@@ -39,8 +39,17 @@ class GerritPlugin(Plugin):
             url=gerrit_project.url,
         )
 
-    def remote_scope_groups(self, connection: Connection) -> list[RemoteScopeGroup]:
-        yield from self.remote_scopes(connection, None)
+    def remote_scope_groups(self, connection: Connection) -> list[RemoteScope]:
+        for tool_scope in self.remote_scopes(connection, None):
+            tool_scope.connection_id = connection.id
+            tool_scope.raw_data_params = raw_data_params(connection.id, tool_scope.id)
+            tool_scope.raw_data_table = self._raw_scope_table_name()
+            yield RemoteScope(
+                id=tool_scope.id,
+                parent_id=None,
+                name=tool_scope.name,
+                data=tool_scope
+            )
 
     def remote_scopes(self, connection: Connection, group_id: str) -> list[GerritProject]:
         api = GerritApi(connection)
