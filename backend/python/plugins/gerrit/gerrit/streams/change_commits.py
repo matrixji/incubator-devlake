@@ -17,14 +17,14 @@ from typing import Iterable
 
 from pydevlake import Substream, DomainType
 import pydevlake.domain_layer.code as code
-from gerrit.api import GerritApi
+from gerrit.streams.changes import GerritChanges
 from gerrit.models import GerritChange, GerritChangeCommit, GerritProject
 
 
 class GerritChangeCommits(Substream):
     tool_model = GerritChangeCommit
     domain_types = [DomainType.CODE]
-    parent_stream = GerritChange
+    parent_stream = GerritChanges
 
     def should_run_on(self, scope: GerritProject) -> bool:
         return True
