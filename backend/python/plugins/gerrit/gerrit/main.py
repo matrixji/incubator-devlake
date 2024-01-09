@@ -51,7 +51,7 @@ class GerritPlugin(Plugin):
         json_data = api.projects().json
         for project_name in json_data:
             yield GerritProject(
-                id='Gerrit:' + connection.id + ':' + project_name,
+                id='Gerrit:' + str(connection.id) + ':' + project_name,
                 name=project_name,
                 url=connection.url + project_name,
             )
