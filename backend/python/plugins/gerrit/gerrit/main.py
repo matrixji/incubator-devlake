@@ -46,7 +46,7 @@ class GerritPlugin(Plugin):
             tool_scope.raw_data_table = self._raw_scope_table_name()
             yield RemoteScope(
                 id=tool_scope.id,
-                parent_id=None,
+                parent_id='',
                 name=tool_scope.name,
                 data=tool_scope
             )
