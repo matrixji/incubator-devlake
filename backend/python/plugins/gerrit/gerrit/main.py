@@ -40,18 +40,14 @@ class GerritPlugin(Plugin):
         )
 
     def remote_scope_groups(self, connection: Connection) -> list[RemoteScopeGroup]:
-        # api = GerritApi(connection)
-        yield RemoteScopeGroup(
-            id='All',
-            name='All'
-        )
+        yield from self.remote_scopes(connection, None)
 
     def remote_scopes(self, connection: Connection, group_id: str) -> list[GerritProject]:
         api = GerritApi(connection)
         json_data = api.projects().json
         for project_name in json_data:
             yield GerritProject(
-                id='Gerrit:' + str(connection.id) + ':' + project_name,
+                id=project_name,
                 name=project_name,
                 url=connection.url + project_name,
             )

@@ -22,6 +22,7 @@ import { PluginConfig } from './config';
 import { PluginConfigType, PluginType } from './types';
 
 export const getPluginScopeId = (plugin: string, scope: any) => {
+  console.log('debug getPluginScopeId', plugin, scope);
   switch (plugin) {
     case 'github':
       return `${scope.githubId}`;
