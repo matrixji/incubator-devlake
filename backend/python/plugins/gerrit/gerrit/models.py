@@ -38,13 +38,13 @@ class GerritConnection(Connection):
         return self.endpoint + '/'
 
 
+class GerritProjectConfig(ScopeConfig):
+    refdiff: Optional[RefDiffOptions]
+
+
 class GerritProject(ToolScope, table=True):
     name: str
     url: str
-
-
-class GerritProjectConfig(ScopeConfig):
-    refdiff: Optional[RefDiffOptions]
 
 
 class GerritChange(ToolModel, table=True):

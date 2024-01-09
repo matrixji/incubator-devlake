@@ -30,7 +30,7 @@ import pydevlake.domain_layer.code as code
 
 class GerritChanges(Stream):
     tool_model = GerritChange
-    domain_types = [DomainType.CODE, DomainType.CODE_REVIEW]
+    domain_types = [DomainType.CODE]
 
     def __init__(self, plugin_name: str):
         super().__init__(plugin_name)
