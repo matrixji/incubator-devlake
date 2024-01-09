@@ -55,7 +55,7 @@ def init_schemas(b: MigrationScriptBuilder):
         owner_email: Optional[str]
         revisions_json: Optional[str]
 
-    class GerritChangeCommit(ToolModel, table=True):
+    class GerritChangeCommit(ToolModel):
         commit_id: str = Field(primary_key=True)
         pull_request_id: str
         author_name: str
