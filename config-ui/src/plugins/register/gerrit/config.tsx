@@ -16,7 +16,6 @@
  *
  */
 
-import { ExternalLink } from '@/components';
 import { DOC_URL } from '@/release';
 
 import type { PluginConfigType } from '../../types';
@@ -26,45 +25,21 @@ import Icon from './assets/icon.svg';
 
 export const GerritConfig: PluginConfigType = {
   type: PluginType.Connection,
-  plugin: 'gitlab',
-  name: 'GitLab',
+  plugin: 'gerrit',
+  name: 'Gerrit',
   icon: Icon,
   sort: 2,
   connection: {
     docLink: DOC_URL.PLUGIN.GITLAB.BASIS,
-    initialValues: {
-      endpoint: 'https://gitlab.com/api/v4/',
-    },
     fields: [
       'name',
       {
         key: 'endpoint',
-        multipleVersions: {
-          cloud: 'https://gitlab.com/api/v4/',
-          server: '(v11+)',
-        },
-        subLabel:
-          'If you are using GitLab Server, please enter the endpoint URL. E.g. https://gitlab.your-company.com/api/v4/',
+        subLabel: 'gerrit server url'
       },
-      {
-        key: 'token',
-        label: 'Personal Access Token',
-        subLabel: (
-          <ExternalLink link={DOC_URL.PLUGIN.GITLAB.AUTH_TOKEN}>
-            Learn how to create a personal access token
-          </ExternalLink>
-        ),
-      },
+      'username',
+      'password',
       'proxy',
-      {
-        key: 'rateLimitPerHour',
-        subLabel:
-          'By default, DevLake uses dynamic rate limit around 12,000 requests/hour for optimized data collection for GitLab. But you can adjust the collection speed by entering a fixed value.',
-        learnMore: DOC_URL.PLUGIN.GITLAB.RATE_LIMIT,
-        externalInfo:
-          'The maximum rate limit for GitLab Cloud is 120,000 requests/hour. Tokens under the same IP address share the rate limit, so the actual rate limit for your token will be lower than this number.',
-        defaultValue: 12000,
-      },
     ],
   },
   dataScope: {
@@ -73,16 +48,14 @@ export const GerritConfig: PluginConfigType = {
       subTitle: 'Select the project you would like to sync.',
       firstColumnTitle: 'Subgroups/Projects',
     },
-    search: {
-      title: 'Add repositories outside of your projects',
-      subTitle: 'Search for repositories and add to them',
-    },
   },
   scopeConfig: {
-    entities: ['CODE', 'TICKET', 'CODEREVIEW', 'CROSS', 'CICD'],
+    entities: ['CODE', 'CODEREVIEW'],
     transformation: {
-      deploymentPattern: '(deploy|push-image)',
-      productionPattern: 'prod(.*)',
+      refdiff: {
+        tagsLimit: 10,
+        tagsPattern: '/v\\d+\\.\\d+(\\.\\d+(-rc)*\\d*)*$/',
+      },
     },
   },
 };

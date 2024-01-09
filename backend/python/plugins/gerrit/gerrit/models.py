@@ -26,16 +26,16 @@ from pydevlake.pipeline_tasks import RefDiffOptions
 import gerrit.migrations
 
 class GerritConnection(Connection):
-    base_url: str
+    endpoint: str
     username: Optional[str]
     password: Optional[SecretStr]
     pattern: Optional[str]
 
     @property
     def url(self):
-        if self.base_url.endswith('/'):
-            return self.base_url
-        return self.base_url + '/'
+        if self.endpoint.endswith('/'):
+            return self.endpoint
+        return self.endpoint + '/'
 
 
 class GerritProject(ToolScope, table=True):

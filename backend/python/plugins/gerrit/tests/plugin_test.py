@@ -18,7 +18,7 @@ def test_valid_plugin_and_connection():
     plugin = GerritPlugin()
     connection = GerritConnection(
         name=connection_name,
-        base_url=connection_url,
+        endpoint=connection_url,
         username=connection_username,
         password=connection_password)
     scope_config = GerritProjectConfig(id=1, name='test_config')
@@ -32,7 +32,7 @@ def test_debug():
     plugin = GerritPlugin()
     connection = GerritConnection(
         name=connection_name,
-        base_url=connection_url,
+        endpoint=connection_url,
         username=connection_username,
         password=connection_password,
         pattern='LP_.*')

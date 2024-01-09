@@ -28,7 +28,7 @@ from pydevlake.pipeline_tasks import RefDiffOptions
 @migration(20240108000001, name="initialize schemas for gerrit")
 def init_schemas(b: MigrationScriptBuilder):
     class GerritConnection(Connection):
-        base_url: str
+        endpoint: str
         username: Optional[str]
         password: Optional[SecretStr]
         pattern: Optional[str]

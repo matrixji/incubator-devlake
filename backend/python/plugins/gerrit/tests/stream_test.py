@@ -12,7 +12,7 @@ def context():
     return (
         ContextBuilder(GerritPlugin())
         .with_connection(
-            base_url='https://gerrit.onap.org/r/'
+            endpoint='https://gerrit.onap.org/r/'
         )
         .with_scope_config()
         .with_scope(
