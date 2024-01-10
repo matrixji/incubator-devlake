@@ -19,6 +19,7 @@ from pydevlake import Substream, DomainType
 import pydevlake.domain_layer.code as code
 from gerrit.streams.changes import GerritChanges
 from gerrit.models import GerritChange, GerritChangeCommit, GerritProject
+from pydevlake.model import ToolModel
 
 
 class GerritChangeCommits(Substream):

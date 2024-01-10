@@ -23,18 +23,3 @@ def test_valid_plugin_and_connection():
         password=connection_password)
     scope_config = GerritProjectConfig(id=1, name='test_config')
     assert_plugin_run(plugin, connection, scope_config)
-
-def test_debug():
-    connection_name = "test_connection"
-    connection_url = environ.get('GERRIT_URL', 'http://10.192.1.50:8080/a/')
-    connection_username = environ.get('GERRIT_USERNAME', 'ji_bin')
-    connection_password = environ.get('GERRIT_PASSWORD', 'Matrix123@@')
-    plugin = GerritPlugin()
-    connection = GerritConnection(
-        name=connection_name,
-        endpoint=connection_url,
-        username=connection_username,
-        password=connection_password,
-        pattern='LP_.*')
-    scope_config = GerritProjectConfig(id=1, name='test_config')
-    assert_plugin_run(plugin, connection, scope_config)

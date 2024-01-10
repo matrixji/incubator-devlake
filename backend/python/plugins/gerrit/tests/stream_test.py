@@ -22,13 +22,6 @@ def context():
         .build()
     )
 
-def test_changes_stream(context):
-    state = {}
-    excepted = {}
-    stream = GerritPlugin().get_stream('gerritchanges')
-    for x in stream.collect(state, context):
-        pass
-
 @pytest.mark.parametrize('raw, expected', [
     ({
         'id': 'ccsdk%2Foran~master~I1c816846ebc2d459d0619550c6e127735652d076',
@@ -104,16 +97,14 @@ def test_changes_stream_convert(raw, expected, context):
     assert_stream_convert(GerritPlugin, 'gerritchanges', raw, expected, context)
 
 
-def test_change_commits_stream_debug1(context):
+def test_change_commits_stream(context):
     state = {}
     excepted = {}
     stream = GerritPlugin().get_stream('gerritchanges')
     parent_dict = next(stream.collect(state, context))[0]
     parent = stream.extract(parent_dict)
-    print(parent)
     stream = GerritPlugin().get_stream('gerritchangecommits')
     for change_commit_data, state in stream.collect(state, context, parent):
         change_commit = stream.extract(change_commit_data)
         pr_commit = stream.convert(change_commit, context)
-        print(next(pr_commit))
         

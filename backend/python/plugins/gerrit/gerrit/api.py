@@ -18,9 +18,15 @@ from typing import Optional
 from pydevlake.api import API, Request, Response, request_hook, response_hook, Paginator
 
 
-# class GerritPaginator(Paginator):
-#     def get_items(self, response) -> Optional[list[object]]:
-#         return response.json
+class GerritPaginator(Paginator):
+    def get_items(self, response) -> Optional[list[object]]:
+        return response.json
+
+    def get_next_page_id(self, response) -> Optional[str]:
+        return 'x'
+
+    def set_next_page_param(self, request, next_page_id):
+        pass
 
 
 class GerritApi(API):
@@ -54,7 +60,7 @@ class GerritApi(API):
         return self.get(projects_uri)
 
     def changes(self, project_name: str):
-        return self.get(f'changes/?q=p:{project_name}&o=CURRENT_REVISION&o=ALL_COMMITS&o=DETAILED_ACCOUNTS')
+        return self.get(f'changes/?q=p:{project_name}&o=CURRENT_REVISION&o=ALL_COMMITS&o=DETAILED_ACCOUNTS&no-limit')
 
     def change_detail(self, change_id: str):
         return self.get(f'changes/{change_id}/detail')
