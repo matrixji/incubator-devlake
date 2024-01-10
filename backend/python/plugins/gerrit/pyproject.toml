@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "gerrit"
+version = "0.1.0"
+description = ""
+authors = ["Ji Bin <matrixji@live.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pydevlake = { path = "../../pydevlake", develop = true }
+mysqlclient = ">=2.1.1,<2.2.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
