@@ -18,32 +18,40 @@
 
 import { IPluginConfig } from '@/types';
 
-import { AzureConfig } from './azure';
-import { BambooConfig } from './bamboo';
-import { BitBucketConfig } from './bitbucket';
-import { GitHubConfig } from './github';
-import { GerritConfig } from './gerrit';
-import { GitLabConfig } from './gitlab';
-import { JenkinsConfig } from './jenkins';
-import { JiraConfig } from './jira';
-import { PagerDutyConfig } from './pagerduty';
-import { SonarQubeConfig } from './sonarqube';
-import { TAPDConfig } from './tapd';
-import { WebhookConfig } from './webhook';
-import { ZenTaoConfig } from './zentao';
+import Icon from './assets/icon.svg?react';
 
-export const pluginConfigs: IPluginConfig[] = [
-  AzureConfig,
-  BambooConfig,
-  BitBucketConfig,
-  GerritConfig,
-  GitHubConfig,
-  GitLabConfig,
-  JenkinsConfig,
-  JiraConfig,
-  PagerDutyConfig,
-  SonarQubeConfig,
-  TAPDConfig,
-  ZenTaoConfig,
-  WebhookConfig,
-].sort((a, b) => a.sort - b.sort);
+export const GerritConfig: IPluginConfig = {
+  plugin: 'gerrit',
+  name: 'Gerrit',
+  icon: ({ color }) => <Icon fill={color} />,
+  sort: 7,
+  connection: {
+    docLink: 'https://devlake.apache.org/docs', // TODO: update doc link
+    fields: [
+      'name',
+      {
+        key: 'endpoint',
+        subLabel: 'Provide the gerrit instance API endpoint.',
+      },
+      'username',
+      'password',
+      'proxy',
+    ],
+  },
+  dataScope: {
+    localSearch: true,
+    title: 'Repositories',
+    millerColumn: {
+      columnCount: 2.5,
+    },
+  },
+  scopeConfig: {
+    entities: ['CODE', 'CODEREVIEW'],
+    transformation: {
+      refdiff: {
+        tagsLimit: 10,
+        tagsPattern: '/v\\d+\\.\\d+(\\.\\d+(-rc)*\\d*)*$/',
+      },
+    },
+  },
+};
