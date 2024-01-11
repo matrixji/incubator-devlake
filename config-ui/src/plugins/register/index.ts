@@ -23,6 +23,7 @@ import { BambooConfig } from './bamboo';
 import { BitBucketConfig } from './bitbucket';
 import { CircleCIConfig } from './circleci';
 import { GitHubConfig } from './github';
+import { GerritConfig } from './gerrit';
 import { GitLabConfig } from './gitlab';
 import { JenkinsConfig } from './jenkins';
 import { JiraConfig } from './jira';
@@ -38,6 +39,7 @@ export const pluginConfigs: IPluginConfig[] = [
   BambooConfig,
   BitBucketConfig,
   CircleCIConfig,
+  GerritConfig,
   GitHubConfig,
   GitLabConfig,
   JenkinsConfig,
