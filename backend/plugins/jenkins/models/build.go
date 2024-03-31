@@ -18,8 +18,9 @@ limitations under the License.
 package models
 
 import (
-	"github.com/apache/incubator-devlake/core/models/common"
 	"time"
+
+	"github.com/apache/incubator-devlake/core/models/common"
 )
 
 // JenkinsBuild db entity for jenkins build
@@ -39,6 +40,7 @@ type JenkinsBuild struct {
 	Type              string    `gorm:"index;type:varchar(255)"`
 	Class             string    `gorm:"index;type:varchar(255)" `
 	TriggeredBy       string    `gorm:"type:varchar(255)"`
+	Parameters        string    `gorm:"type:text"`
 	Building          bool
 	HasStages         bool
 }
