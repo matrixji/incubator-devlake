@@ -18,23 +18,29 @@ limitations under the License.
 package migrationscripts
 
 import (
-	"github.com/apache/incubator-devlake/core/plugin"
+	"github.com/apache/incubator-devlake/core/context"
+	"github.com/apache/incubator-devlake/core/errors"
 )
 
-// All return all the migration scripts
-func All() []plugin.MigrationScript {
-	return []plugin.MigrationScript{
-		new(addInitTables),
-		new(modifyAllEntities),
-		new(modifyJenkinsBuild),
-		new(addJobFields),
-		new(addJobPathForBuilds),
-		new(changeIndexOfJobPath),
-		new(addTransformationRule20221128),
-		new(addFullNameForBuilds),
-		new(addConnectionIdToTransformationRule),
-		new(renameTr2ScopeConfig),
-		new(addRawParamTableForScope),
-		new(addParametersForBuilds),
-	}
+type addParametersForBuilds struct{}
+
+type jenkinsBuild20240330 struct {
+	Parameters string `gorm:"type:text"`
+}
+
+func (jenkinsBuild20240330) TableName() string {
+	return "_tool_jenkins_builds"
+}
+
+func (script *addParametersForBuilds) Up(basicRes context.BasicRes) errors.Error {
+	db := basicRes.GetDal()
+	return db.AutoMigrate(&jenkinsBuild20240330{})
+}
+
+func (*addParametersForBuilds) Version() uint64 {
+	return 20240330000001
+}
+
+func (*addParametersForBuilds) Name() string {
+	return "add parameters for builds"
 }

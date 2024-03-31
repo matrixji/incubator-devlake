@@ -18,9 +18,14 @@ limitations under the License.
 package tasks
 
 import (
+	"encoding/json"
+	"fmt"
+	"net/http"
+	"strings"
+
 	"github.com/apache/incubator-devlake/core/errors"
 	helper "github.com/apache/incubator-devlake/helpers/pluginhelper/api"
-	"net/http"
+	"github.com/apache/incubator-devlake/plugins/jenkins/models"
 )
 
 const (
@@ -40,4 +45,27 @@ func ignoreHTTPStatus404(res *http.Response) errors.Error {
 		return helper.ErrIgnoreAndContinue
 	}
 	return nil
+}
+
+func getEnvrionmentValueFromParameters(parameters *string, defaultEnv *string) string {
+	envsMapping := map[string]string{
+		"prod": "PRODUCTION",
+	}
+	key := "deploy_env"
+
+	// deserialize parameters
+	var params []models.Parameter
+
+	if err := json.Unmarshal([]byte(*parameters), &params); err == nil {
+		for _, param := range params {
+			if param.Name == key {
+				valueText := fmt.Sprintf("%v", param.Value)
+				if val, ok := envsMapping[valueText]; ok {
+					return val
+				}
+				return strings.ToUpper(valueText)
+			}
+		}
+	}
+	return *defaultEnv
 }
