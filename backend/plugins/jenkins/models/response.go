@@ -115,12 +115,18 @@ type LastBuiltRevision struct {
 	Branches []Branch `json:"branch"`
 }
 
+type Parameter struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
+}
+
 type Action struct {
 	Class                   string             `json:"_class,omitempty"`
 	LastBuiltRevision       *LastBuiltRevision `json:"lastBuiltRevision,omitempty"`
 	MercurialRevisionNumber string             `json:"mercurialRevisionNumber"`
 	RemoteUrls              []string           `json:"remoteUrls"`
 	Causes                  []Cause            `json:"causes"`
+	Parameters              []Parameter        `json:"parameters,omitempty"`
 }
 type ChangeSet struct {
 	Class     string     `json:"_class"`
