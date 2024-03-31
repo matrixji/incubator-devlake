@@ -20,12 +20,13 @@ package tasks
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/apache/incubator-devlake/core/errors"
 	"github.com/apache/incubator-devlake/core/plugin"
 	"github.com/apache/incubator-devlake/helpers/pluginhelper/api"
 	"github.com/apache/incubator-devlake/plugins/jenkins/models"
-	"strings"
-	"time"
 )
 
 // this struct should be moved to `gitub_api_common.go`
@@ -72,9 +73,11 @@ func ExtractApiBuilds(taskCtx plugin.SubTaskContext) errors.Error {
 				Class:             class,
 				Building:          body.Building,
 				StartTime:         time.Unix(body.Timestamp/1000, 0),
+				Parameters:        "[]",
 			}
 			// we also need to collect the commit info from the build which does not have changeSet
 			// changeSet describes the changes that were made in the build
+			// process hudson.plugins.git.util.BuildData
 			for _, a := range body.Actions {
 				if a.LastBuiltRevision == nil {
 					continue
@@ -103,6 +106,10 @@ func ExtractApiBuilds(taskCtx plugin.SubTaskContext) errors.Error {
 						results = append(results, &buildCommitRemoteUrl)
 					}
 				}
+			}
+			// process hudson.model.CauseAction
+			// process hudson.model.ParametersAction
+			for _, a := range body.Actions {
 				if len(a.Causes) > 0 {
 					for _, cause := range a.Causes {
 						if cause.UpstreamProject != "" {
@@ -111,8 +118,13 @@ func ExtractApiBuilds(taskCtx plugin.SubTaskContext) errors.Error {
 						}
 					}
 				}
-			}
 
+				if a.Parameters != nil && len(a.Parameters) > 0 {
+					if s, e := json.Marshal(a.Parameters); e == nil {
+						build.Parameters = string(s)
+					}
+				}
+			}
 			results = append(results, build)
 			return results, nil
 		},
