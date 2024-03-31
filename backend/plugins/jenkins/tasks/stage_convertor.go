@@ -145,6 +145,7 @@ func ConvertStages(taskCtx plugin.SubTaskContext) (err errors.Error) {
 				Type:           data.RegexEnricher.ReturnNameIfMatched(devops.DEPLOYMENT, body.Name),
 				Environment:    data.RegexEnricher.ReturnNameIfOmittedOrMatched(devops.PRODUCTION, body.Name),
 			}
+			jenkinsTask.Environment = getEnvrionmentValueFromParameters()
 			results = append(results, jenkinsTask)
 			return results, nil
 		},
