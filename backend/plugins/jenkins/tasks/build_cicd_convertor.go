@@ -18,9 +18,10 @@ limitations under the License.
 package tasks
 
 import (
-	"github.com/spf13/cast"
 	"reflect"
 	"time"
+
+	"github.com/spf13/cast"
 
 	"github.com/apache/incubator-devlake/core/dal"
 	"github.com/apache/incubator-devlake/core/errors"
@@ -119,6 +120,7 @@ func ConvertBuildsToCicdTasks(taskCtx plugin.SubTaskContext) (err errors.Error) 
 				Environment: data.RegexEnricher.ReturnNameIfOmittedOrMatched(devops.PRODUCTION, jenkinsBuild.FullName),
 			}
 			jenkinsPipeline.RawDataOrigin = jenkinsBuild.RawDataOrigin
+			jenkinsPipeline.Environment = getEnvrionmentValueFromParameters(&jenkinsBuild.Parameters)
 			results = append(results, jenkinsPipeline)
 
 			if !jenkinsBuild.HasStages {
@@ -142,6 +144,7 @@ func ConvertBuildsToCicdTasks(taskCtx plugin.SubTaskContext) (err errors.Error) 
 					Environment: data.RegexEnricher.ReturnNameIfOmittedOrMatched(devops.PRODUCTION, jenkinsBuild.FullName),
 					PipelineId:  buildIdGen.Generate(jenkinsBuild.ConnectionId, jenkinsBuild.FullName),
 				}
+				jenkinsTask.Environment = getEnvrionmentValueFromParameters(&jenkinsBuild.Parameters)
 				results = append(results, jenkinsTask)
 
 			}
