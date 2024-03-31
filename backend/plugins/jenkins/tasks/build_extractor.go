@@ -20,12 +20,13 @@ package tasks
 import (
 	"encoding/json"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/apache/incubator-devlake/core/errors"
 	"github.com/apache/incubator-devlake/core/plugin"
 	"github.com/apache/incubator-devlake/helpers/pluginhelper/api"
 	"github.com/apache/incubator-devlake/plugins/jenkins/models"
-	"strings"
-	"time"
 )
 
 // this struct should be moved to `gitub_api_common.go`
@@ -72,47 +73,58 @@ func ExtractApiBuilds(taskCtx plugin.SubTaskContext) errors.Error {
 				Class:             class,
 				Building:          body.Building,
 				StartTime:         time.Unix(body.Timestamp/1000, 0),
+				Parameters:        "[]",
 			}
 			// we also need to collect the commit info from the build which does not have changeSet
 			// changeSet describes the changes that were made in the build
+			sha := ""
+			branch := ""
+			// first lookup sha/branch from the lastBuiltRevision
 			for _, a := range body.Actions {
-				if a.LastBuiltRevision == nil {
-					continue
-				}
-				sha := ""
-				branch := ""
-				if a.LastBuiltRevision.SHA1 != "" {
-					sha = a.LastBuiltRevision.SHA1
-				}
-				if a.MercurialRevisionNumber != "" {
-					sha = a.MercurialRevisionNumber
-				}
-
-				if len(a.LastBuiltRevision.Branches) > 0 {
-					branch = a.LastBuiltRevision.Branches[0].Name
-				}
-				for _, url := range a.RemoteUrls {
-					if url != "" {
-						buildCommitRemoteUrl := models.JenkinsBuildCommit{
-							ConnectionId: data.Options.ConnectionId,
-							BuildName:    build.FullName,
-							CommitSha:    sha,
-							RepoUrl:      url,
-							Branch:       branch,
-						}
-						results = append(results, &buildCommitRemoteUrl)
+				if a.LastBuiltRevision != nil {
+					if a.LastBuiltRevision.SHA1 != "" {
+						sha = a.LastBuiltRevision.SHA1
 					}
-				}
-				if len(a.Causes) > 0 {
-					for _, cause := range a.Causes {
-						if cause.UpstreamProject != "" {
-							triggeredByBuild := fmt.Sprintf("%s #%d", cause.UpstreamProject, cause.UpstreamBuild)
-							build.TriggeredBy = triggeredByBuild
-						}
+					if a.MercurialRevisionNumber != "" {
+						sha = a.MercurialRevisionNumber
+					}
+
+					if len(a.LastBuiltRevision.Branches) > 0 {
+						branch = a.LastBuiltRevision.Branches[0].Name
 					}
 				}
 			}
-
+			for _, a := range body.Actions {
+				if a.RemoteUrls != nil && len(a.RemoteUrls) > 0 {
+					for _, url := range a.RemoteUrls {
+						if url != "" {
+							buildCommitRemoteUrl := models.JenkinsBuildCommit{
+								ConnectionId: data.Options.ConnectionId,
+								BuildName:    build.FullName,
+								CommitSha:    sha,
+								RepoUrl:      url,
+								Branch:       branch,
+							}
+							results = append(results, &buildCommitRemoteUrl)
+						}
+					}
+				}
+				if a.Causes != nil && len(a.Causes) > 0 {
+					if len(a.Causes) > 0 {
+						for _, cause := range a.Causes {
+							if cause.UpstreamProject != "" {
+								triggeredByBuild := fmt.Sprintf("%s #%d", cause.UpstreamProject, cause.UpstreamBuild)
+								build.TriggeredBy = triggeredByBuild
+							}
+						}
+					}
+				}
+				if a.Parameters != nil && len(a.Parameters) > 0 {
+					if s, e := json.Marshal(a.Parameters); e == nil {
+						build.Parameters = string(s)
+					}
+				}
+			}
 			results = append(results, build)
 			return results, nil
 		},
