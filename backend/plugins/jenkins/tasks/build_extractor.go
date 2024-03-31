@@ -73,56 +73,53 @@ func ExtractApiBuilds(taskCtx plugin.SubTaskContext) errors.Error {
 				Class:             class,
 				Building:          body.Building,
 				StartTime:         time.Unix(body.Timestamp/1000, 0),
+				Parameters:        "[]",
 			}
 			// we also need to collect the commit info from the build which does not have changeSet
 			// changeSet describes the changes that were made in the build
 			for _, a := range body.Actions {
-				if a.LastBuiltRevision == nil {
-					continue
-				}
-				sha := ""
-				branch := ""
-				if a.LastBuiltRevision.SHA1 != "" {
-					sha = a.LastBuiltRevision.SHA1
-				}
-				if a.MercurialRevisionNumber != "" {
-					sha = a.MercurialRevisionNumber
-				}
+				if a.LastBuiltRevision != nil {
+					sha := ""
+					branch := ""
+					if a.LastBuiltRevision.SHA1 != "" {
+						sha = a.LastBuiltRevision.SHA1
+					}
+					if a.MercurialRevisionNumber != "" {
+						sha = a.MercurialRevisionNumber
+					}
 
-				if len(a.LastBuiltRevision.Branches) > 0 {
-					branch = a.LastBuiltRevision.Branches[0].Name
-				}
-				for _, url := range a.RemoteUrls {
-					if url != "" {
-						buildCommitRemoteUrl := models.JenkinsBuildCommit{
-							ConnectionId: data.Options.ConnectionId,
-							BuildName:    build.FullName,
-							CommitSha:    sha,
-							RepoUrl:      url,
-							Branch:       branch,
-						}
-						results = append(results, &buildCommitRemoteUrl)
+					if len(a.LastBuiltRevision.Branches) > 0 {
+						branch = a.LastBuiltRevision.Branches[0].Name
 					}
 				}
-				if len(a.Causes) > 0 {
-					for _, cause := range a.Causes {
-						if cause.UpstreamProject != "" {
-							triggeredByBuild := fmt.Sprintf("%s #%d", cause.UpstreamProject, cause.UpstreamBuild)
-							build.TriggeredBy = triggeredByBuild
+				if a.RemoteUrls != nil && len(a.RemoteUrls) > 0 {
+					for _, url := range a.RemoteUrls {
+						if url != "" {
+							buildCommitRemoteUrl := models.JenkinsBuildCommit{
+								ConnectionId: data.Options.ConnectionId,
+								BuildName:    build.FullName,
+								CommitSha:    sha,
+								RepoUrl:      url,
+								Branch:       branch,
+							}
+							results = append(results, &buildCommitRemoteUrl)
 						}
 					}
 				}
-				// save parameters as json
-				if len(a.Parameters) > 0 {
-					params, err := json.Marshal(a.Parameters)
-					if err == nil {
-						build.Parameters = string(params)
-					} else {
-						build.Parameters = "[]"
+				if a.Causes != nil && len(a.Causes) > 0 {
+					if len(a.Causes) > 0 {
+						for _, cause := range a.Causes {
+							if cause.UpstreamProject != "" {
+								triggeredByBuild := fmt.Sprintf("%s #%d", cause.UpstreamProject, cause.UpstreamBuild)
+								build.TriggeredBy = triggeredByBuild
+							}
+						}
 					}
+				}
+				if a.Parameters != nil && len(a.Parameters) > 0 {
+					build.Parameters = json.Marshal(a.Parameters)
 				}
 			}
-
 			results = append(results, build)
 			return results, nil
 		},
